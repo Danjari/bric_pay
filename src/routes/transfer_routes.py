@@ -6,7 +6,14 @@ from datetime import datetime
 from src.database import get_db
 from src.schemas import TransferRequest, TransferResponse, ErrorResponse
 from src.services.transfer_service import TransferService
-from src.utils import TransactionManager
+from src.utils import (
+    TransactionManager,
+    handle_validation_error,
+    handle_business_logic_error,
+    handle_generic_error,
+    sanitize_input,
+    BusinessLogicError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,19 +29,17 @@ def transfer_funds():
         # Get JSON data from request
         data = request.get_json()
         if not data:
-            return jsonify(ErrorResponse(
-                error="Invalid request",
+            raise BusinessLogicError(
+                "Invalid request",
+                code="MISSING_REQUEST_BODY",
                 details="Request body is required"
-            ).dict()), 400
+            )
         
         # Validate request data
         try:
             transfer_data = TransferRequest(**data)
         except ValidationError as e:
-            return jsonify(ErrorResponse(
-                error="Validation error",
-                details=str(e)
-            ).dict()), 400
+            return handle_validation_error(e)
         
         # Get database session
         db = next(get_db())
@@ -44,19 +49,11 @@ def transfer_funds():
         
         return jsonify(result.dict()), 200
         
-    except ValueError as e:
-        logger.error(f"Transfer failed: {e}")
-        return jsonify(ErrorResponse(
-            error="Transfer failed",
-            details=str(e)
-        ).dict()), 400
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
         
     except Exception as e:
-        logger.error(f"Unexpected error during transfer: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to process transfer"
-        ).dict()), 500
+        return handle_generic_error(e, "fund transfer")
 
 @transfer_bp.route('/account/<account_number>/transactions', methods=['GET'])
 def get_transaction_history(account_number):
@@ -64,6 +61,16 @@ def get_transaction_history(account_number):
     Get transaction history for an account
     """
     try:
+        # Sanitize account number
+        try:
+            sanitized_account = sanitize_input(account_number, max_length=20)
+        except Exception as e:
+            raise BusinessLogicError(
+                str(e),
+                code="INVALID_ACCOUNT_NUMBER",
+                field="account_number"
+            )
+        
         # Get limit parameter
         limit = request.args.get('limit', 10, type=int)
         if limit > 100:  # Prevent excessive queries
@@ -73,28 +80,20 @@ def get_transaction_history(account_number):
         db = next(get_db())
         
         # Get transaction history
-        transactions = TransferService.get_transfer_history(db, account_number, limit)
+        transactions = TransferService.get_transfer_history(db, sanitized_account, limit)
         
         return jsonify({
-            "account_number": account_number,
+            "account_number": sanitized_account,
             "transactions": transactions,
             "count": len(transactions),
             "limit": limit
         }), 200
         
-    except ValueError as e:
-        logger.error(f"Failed to get transaction history: {e}")
-        return jsonify(ErrorResponse(
-            error="Failed to get transaction history",
-            details=str(e)
-        ).dict()), 404
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
         
     except Exception as e:
-        logger.error(f"Unexpected error getting transaction history: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to get transaction history"
-        ).dict()), 500
+        return handle_generic_error(e, "transaction history retrieval")
 
 @transfer_bp.route('/account/<account_number>/balance', methods=['GET'])
 def get_balance(account_number):
@@ -102,31 +101,33 @@ def get_balance(account_number):
     Get current balance for an account
     """
     try:
+        # Sanitize account number
+        try:
+            sanitized_account = sanitize_input(account_number, max_length=20)
+        except Exception as e:
+            raise BusinessLogicError(
+                str(e),
+                code="INVALID_ACCOUNT_NUMBER",
+                field="account_number"
+            )
+        
         # Get database session
         db = next(get_db())
         
         # Get balance
-        balance = TransferService.get_account_balance(db, account_number)
+        balance = TransferService.get_account_balance(db, sanitized_account)
         
         return jsonify({
-            "account_number": account_number,
+            "account_number": sanitized_account,
             "balance": balance,
             "currency": "USD"
         }), 200
         
-    except ValueError as e:
-        logger.error(f"Failed to get balance: {e}")
-        return jsonify(ErrorResponse(
-            error="Failed to get balance",
-            details=str(e)
-        ).dict()), 404
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
         
     except Exception as e:
-        logger.error(f"Unexpected error getting balance: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to get balance"
-        ).dict()), 500
+        return handle_generic_error(e, "balance retrieval")
 
 @transfer_bp.route('/validate-transfer', methods=['POST'])
 def validate_transfer():
@@ -137,19 +138,17 @@ def validate_transfer():
         # Get JSON data from request
         data = request.get_json()
         if not data:
-            return jsonify(ErrorResponse(
-                error="Invalid request",
+            raise BusinessLogicError(
+                "Invalid request",
+                code="MISSING_REQUEST_BODY",
                 details="Request body is required"
-            ).dict()), 400
+            )
         
         # Validate request data
         try:
             transfer_data = TransferRequest(**data)
         except ValidationError as e:
-            return jsonify(ErrorResponse(
-                error="Validation error",
-                details=str(e)
-            ).dict()), 400
+            return handle_validation_error(e)
         
         # Get database session
         db = next(get_db())
@@ -162,12 +161,11 @@ def validate_transfer():
             "validation": validation_result
         }), 200
         
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
+        
     except Exception as e:
-        logger.error(f"Error validating transfer: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to validate transfer"
-        ).dict()), 500
+        return handle_generic_error(e, "transfer validation")
 
 @transfer_bp.route('/account/<account_number>/concurrent-status', methods=['GET'])
 def get_concurrent_status(account_number):
@@ -175,20 +173,29 @@ def get_concurrent_status(account_number):
     Get information about concurrent operations for an account
     """
     try:
+        # Sanitize account number
+        try:
+            sanitized_account = sanitize_input(account_number, max_length=20)
+        except Exception as e:
+            raise BusinessLogicError(
+                str(e),
+                code="INVALID_ACCOUNT_NUMBER",
+                field="account_number"
+            )
+        
         # Get database session
         db = next(get_db())
         
         # Get concurrent status
-        status = TransferService.get_concurrent_transfer_status(db, account_number)
+        status = TransferService.get_concurrent_transfer_status(db, sanitized_account)
         
         return jsonify(status), 200
         
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
+        
     except Exception as e:
-        logger.error(f"Error getting concurrent status: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to get concurrent status"
-        ).dict()), 500
+        return handle_generic_error(e, "concurrent status retrieval")
 
 @transfer_bp.route('/transaction-info', methods=['GET'])
 def get_transaction_info():
@@ -212,11 +219,7 @@ def get_transaction_info():
         }), 200
         
     except Exception as e:
-        logger.error(f"Error getting transaction info: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="Failed to get transaction info"
-        ).dict()), 500
+        return handle_generic_error(e, "transaction info retrieval")
 
 @transfer_bp.route('/health', methods=['GET'])
 def health_check():
@@ -245,9 +248,4 @@ def health_check():
         return jsonify(health_status), status_code
         
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        return jsonify({
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }), 503 
+        return handle_generic_error(e, "health check") 

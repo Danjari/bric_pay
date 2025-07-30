@@ -5,6 +5,13 @@ import logging
 from src.database import get_db
 from src.schemas import DepositRequest, DepositResponse, ErrorResponse
 from src.services.deposit_service import DepositService
+from src.utils import (
+    handle_validation_error,
+    handle_business_logic_error,
+    handle_generic_error,
+    sanitize_input,
+    BusinessLogicError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +40,7 @@ def deposit_funds():
         try:
             deposit_data = DepositRequest(**request.get_json())
         except ValidationError as e:
-            logger.warning(f"Validation error in deposit request: {e}")
-            return jsonify(ErrorResponse(
-                error="Validation error",
-                details=str(e)
-            ).dict()), 400
+            return handle_validation_error(e)
         
         # Process deposit
         result = DepositService.deposit_funds(db, deposit_data)
@@ -45,21 +48,11 @@ def deposit_funds():
         logger.info(f"Deposit successful for account {deposit_data.account_number}")
         return jsonify(result.dict()), 200
         
-    except ValueError as e:
-        # Handle account not found or other business logic errors
-        logger.warning(f"Deposit failed: {e}")
-        return jsonify(ErrorResponse(
-            error="Deposit failed",
-            details=str(e)
-        ).dict()), 404
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
         
     except Exception as e:
-        # Handle unexpected errors
-        logger.error(f"Unexpected error in deposit endpoint: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="An unexpected error occurred while processing the deposit"
-        ).dict()), 500
+        return handle_generic_error(e, "deposit operation")
 
 @deposit_bp.route('/account/<account_number>/balance', methods=['GET'])
 def get_balance(account_number):
@@ -73,30 +66,30 @@ def get_balance(account_number):
         JSON response with current balance
     """
     try:
+        # Sanitize account number
+        try:
+            sanitized_account = sanitize_input(account_number, max_length=20)
+        except Exception as e:
+            raise BusinessLogicError(
+                str(e),
+                code="INVALID_ACCOUNT_NUMBER",
+                field="account_number"
+            )
+        
         # Get database session
         db = next(get_db())
         
         # Get balance
-        balance = DepositService.get_account_balance(db, account_number)
+        balance = DepositService.get_account_balance(db, sanitized_account)
         
         return jsonify({
-            "account_number": account_number,
+            "account_number": sanitized_account,
             "balance": balance,
             "message": "Balance retrieved successfully"
         }), 200
         
-    except ValueError as e:
-        # Handle account not found
-        logger.warning(f"Balance check failed: {e}")
-        return jsonify(ErrorResponse(
-            error="Account not found",
-            details=str(e)
-        ).dict()), 404
+    except BusinessLogicError as e:
+        return handle_business_logic_error(e)
         
     except Exception as e:
-        # Handle unexpected errors
-        logger.error(f"Unexpected error in balance endpoint: {e}")
-        return jsonify(ErrorResponse(
-            error="Internal server error",
-            details="An unexpected error occurred while retrieving balance"
-        ).dict()), 500 
+        return handle_generic_error(e, "balance retrieval") 
