@@ -87,6 +87,45 @@ class DepositResponse(BaseModel):
     new_balance: float = Field(..., description="Updated account balance")
     deposited_amount: float = Field(..., description="Amount that was deposited")
     message: str = Field(..., description="Success message")
+
+class TransferRequest(BaseModel):
+    """Schema for transfer request"""
+    from_account: str = Field(..., description="Source account number")
+    to_account: str = Field(..., description="Destination account number")
+    amount: float = Field(..., gt=0, description="Amount to transfer (must be positive)")
+    
+    @validator('amount')
+    def validate_amount(cls, v):
+        """Validate transfer amount"""
+        if v <= 0:
+            raise ValueError('Transfer amount must be positive')
+        if v > 1000000:  # $1M limit
+            raise ValueError('Transfer amount cannot exceed $1,000,000')
+        return round(v, 2)  # Round to 2 decimal places
+    
+    @validator('from_account', 'to_account')
+    def validate_account_numbers(cls, v):
+        """Validate account number format"""
+        if not v.isdigit() or len(v) != 10:
+            raise ValueError('Account number must be exactly 10 digits')
+        return v
+    
+    @validator('to_account')
+    def validate_different_accounts(cls, v, values):
+        """Validate that from_account and to_account are different"""
+        if 'from_account' in values and v == values['from_account']:
+            raise ValueError('Cannot transfer to the same account')
+        return v
+
+class TransferResponse(BaseModel):
+    """Schema for transfer response"""
+    transfer_id: str = Field(..., description="Unique transfer ID")
+    from_account: str = Field(..., description="Source account number")
+    to_account: str = Field(..., description="Destination account number")
+    amount: float = Field(..., description="Amount transferred")
+    from_balance: float = Field(..., description="Updated balance of source account")
+    to_balance: float = Field(..., description="Updated balance of destination account")
+    message: str = Field(..., description="Success message")
     
 class ErrorResponse(BaseModel):
     """Schema for error responses"""
