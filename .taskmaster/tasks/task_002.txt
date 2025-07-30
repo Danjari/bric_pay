@@ -1,0 +1,52 @@
+# Task ID: 2
+# Title: Database Schema Design and Setup
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Design and implement the database schema for user accounts and transactions using SQLAlchemy with SQLite.
+# Details:
+Create SQLAlchemy models for User (id, name, surname, phone, password_hash, date_of_birth, place_of_birth, account_number, balance, created_at) and Transaction (id, from_account, to_account, amount, transaction_type, created_at). Set up database connection and migrations.
+
+# Test Strategy:
+Create unit tests to verify database models, relationships, and basic CRUD operations work correctly.
+
+# Subtasks:
+## 1. Design database models and relationships [pending]
+### Dependencies: None
+### Description: Create SQLAlchemy models for User and Transaction entities with proper relationships and constraints.
+### Details:
+1. Create User model with all required fields (id, name, surname, phone, password_hash, date_of_birth, place_of_birth, account_number, balance, created_at)
+2. Create Transaction model with fields (id, from_account, to_account, amount, transaction_type, created_at)
+3. Define proper relationships between models
+4. Add database constraints and indexes
+5. Set up proper data types and field validations
+6. Create model validation methods
+7. Add unique constraints for account_number and phone
+8. Set up proper foreign key relationships
+
+## 2. Set up database connection and configuration [pending]
+### Dependencies: None
+### Description: Configure SQLAlchemy database connection, connection pooling, and database initialization.
+### Details:
+1. Set up SQLAlchemy database URL configuration
+2. Configure database connection pooling
+3. Create database engine and session management
+4. Set up async database support with databases package
+5. Configure database connection retry logic
+6. Set up database connection health checks
+7. Create database initialization script
+8. Test database connectivity and basic operations
+
+## 3. Create database migrations and schema setup [pending]
+### Dependencies: None
+### Description: Set up database migrations system and create initial database schema with tables.
+### Details:
+1. Set up Alembic for database migrations
+2. Create initial migration for User and Transaction tables
+3. Add database indexes for performance optimization
+4. Set up migration scripts for development and production
+5. Create database seeding scripts for testing
+6. Set up database backup and restore procedures
+7. Test migration rollback functionality
+8. Document database schema and migration procedures
+

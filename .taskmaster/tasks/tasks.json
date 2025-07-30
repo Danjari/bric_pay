@@ -1,0 +1,268 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Setup and Environment Configuration",
+        "description": "Set up the initial project structure, dependencies, and environment configuration for the Bric Pay fintech backend API.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [],
+        "details": "Initialize the FastAPI project with Python 3.9+, set up virtual environment, install required dependencies (FastAPI, SQLAlchemy, bcrypt, databases), configure environment variables (.env file), and set up the basic project structure.",
+        "testStrategy": "Verify all dependencies are installed correctly, environment variables are accessible, and the basic FastAPI app can start without errors.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Python virtual environment and project structure",
+            "description": "Create a Python virtual environment, set up the basic project directory structure, and create initial configuration files.",
+            "details": "1. Create a Python virtual environment using venv or conda\n2. Set up project directory structure (src/, tests/, docs/, etc.)\n3. Create requirements.txt with initial dependencies\n4. Set up .env file template for environment variables\n5. Create basic .gitignore for Python project\n6. Initialize git repository if not already done",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 2,
+            "title": "Install and configure FastAPI dependencies",
+            "description": "Install all required Python packages for the FastAPI backend including core dependencies and development tools.",
+            "details": "1. Install FastAPI and Uvicorn for the web framework\n2. Install SQLAlchemy and databases for database ORM\n3. Install bcrypt for password hashing\n4. Install pydantic for data validation\n5. Install pytest and pytest-asyncio for testing\n6. Install python-dotenv for environment variable management\n7. Install alembic for database migrations (optional)\n8. Verify all dependencies are installed correctly",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          },
+          {
+            "id": 3,
+            "title": "Create basic FastAPI application structure",
+            "description": "Set up the main FastAPI application with proper project structure, configuration, and basic routing.",
+            "details": "1. Create main.py with FastAPI app initialization\n2. Set up app configuration and settings management\n3. Create basic project structure (models/, routes/, services/, utils/)\n4. Set up CORS middleware for frontend integration\n5. Create basic health check endpoint\n6. Configure logging and error handling\n7. Set up environment variable loading\n8. Test basic application startup",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 1
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Database Schema Design and Setup",
+        "description": "Design and implement the database schema for user accounts and transactions using SQLAlchemy with SQLite.",
+        "status": "done",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "details": "Create SQLAlchemy models for User (id, name, surname, phone, password_hash, date_of_birth, place_of_birth, account_number, balance, created_at) and Transaction (id, from_account, to_account, amount, transaction_type, created_at). Set up database connection and migrations.",
+        "testStrategy": "Create unit tests to verify database models, relationships, and basic CRUD operations work correctly.",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design database models and relationships",
+            "description": "Create SQLAlchemy models for User and Transaction entities with proper relationships and constraints.",
+            "details": "1. Create User model with all required fields (id, name, surname, phone, password_hash, date_of_birth, place_of_birth, account_number, balance, created_at)\n2. Create Transaction model with fields (id, from_account, to_account, amount, transaction_type, created_at)\n3. Define proper relationships between models\n4. Add database constraints and indexes\n5. Set up proper data types and field validations\n6. Create model validation methods\n7. Add unique constraints for account_number and phone\n8. Set up proper foreign key relationships",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          },
+          {
+            "id": 2,
+            "title": "Set up database connection and configuration",
+            "description": "Configure SQLAlchemy database connection, connection pooling, and database initialization.",
+            "details": "1. Set up SQLAlchemy database URL configuration\n2. Configure database connection pooling\n3. Create database engine and session management\n4. Set up async database support with databases package\n5. Configure database connection retry logic\n6. Set up database connection health checks\n7. Create database initialization script\n8. Test database connectivity and basic operations",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          },
+          {
+            "id": 3,
+            "title": "Create database migrations and schema setup",
+            "description": "Set up database migrations system and create initial database schema with tables.",
+            "details": "1. Set up Alembic for database migrations\n2. Create initial migration for User and Transaction tables\n3. Add database indexes for performance optimization\n4. Set up migration scripts for development and production\n5. Create database seeding scripts for testing\n6. Set up database backup and restore procedures\n7. Test migration rollback functionality\n8. Document database schema and migration procedures",
+            "status": "done",
+            "dependencies": [],
+            "parentTaskId": 2
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Account Creation API Endpoint",
+        "description": "Implement the POST /create-account endpoint for user registration and account creation.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "details": "Create endpoint that accepts user data (name, surname, phone, password, date_of_birth, place_of_birth), validates input, hashes password with bcrypt, generates unique 10-12 digit account number, stores user in database, and returns account number and initial balance (0).",
+        "testStrategy": "Test with valid and invalid inputs, verify password hashing, account number generation, duplicate phone number handling, and proper response format."
+      },
+      {
+        "id": 4,
+        "title": "Deposit Funds API Endpoint",
+        "description": "Implement the POST /deposit endpoint for adding funds to user accounts.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "details": "Create endpoint that accepts account_number and amount, validates account exists and amount is positive, updates account balance, creates transaction record, and returns updated balance with success message.",
+        "testStrategy": "Test with valid account numbers and amounts, invalid accounts, negative amounts, and verify balance updates correctly."
+      },
+      {
+        "id": 5,
+        "title": "Transfer Funds API Endpoint",
+        "description": "Implement the POST /transfer endpoint for peer-to-peer fund transfers between accounts.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4
+        ],
+        "details": "Create endpoint that accepts from_account, to_account, and amount, validates both accounts exist, checks sufficient balance, performs atomic transfer (debit sender, credit receiver), creates transaction records, and returns transfer confirmation.",
+        "testStrategy": "Test successful transfers, insufficient balance scenarios, non-existent accounts, and verify atomicity of transactions."
+      },
+      {
+        "id": 6,
+        "title": "Input Validation and Error Handling",
+        "description": "Implement comprehensive input validation and error handling for all API endpoints.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5
+        ],
+        "details": "Add validation for phone number format (+country code), password strength (minimum 8 characters), positive amounts, account existence, and proper error responses with appropriate HTTP status codes.",
+        "testStrategy": "Test all validation rules with edge cases and verify proper error messages and status codes are returned."
+      },
+      {
+        "id": 7,
+        "title": "Password Security Implementation",
+        "description": "Implement secure password hashing and verification using bcrypt.",
+        "status": "pending",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "details": "Integrate bcrypt for password hashing during account creation, implement password verification for future authentication features, and ensure secure storage of password hashes.",
+        "testStrategy": "Verify password hashing works correctly, hashes are unique for same passwords, and verification functions work properly."
+      },
+      {
+        "id": 8,
+        "title": "Account Number Generation System",
+        "description": "Implement secure and unique account number generation for new user accounts.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "details": "Create a system to generate unique 10-12 digit numeric account numbers, ensure no duplicates, and implement proper validation for account number format.",
+        "testStrategy": "Test account number generation for uniqueness, proper format, and handle edge cases like maximum number of accounts."
+      },
+      {
+        "id": 9,
+        "title": "Database Transaction Management",
+        "description": "Implement proper database transaction management for atomic operations.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5
+        ],
+        "details": "Ensure all database operations, especially transfers, are atomic using SQLAlchemy transactions, implement proper rollback mechanisms, and handle concurrent access scenarios.",
+        "testStrategy": "Test concurrent transfers, database failures, and verify transaction rollback works correctly."
+      },
+      {
+        "id": 10,
+        "title": "API Documentation and OpenAPI/Swagger",
+        "description": "Set up comprehensive API documentation using FastAPI's automatic OpenAPI/Swagger generation.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          3,
+          4,
+          5
+        ],
+        "details": "Configure FastAPI to generate OpenAPI documentation, add proper docstrings and response models, and ensure all endpoints are properly documented with examples.",
+        "testStrategy": "Verify Swagger UI is accessible, all endpoints are documented, and examples work correctly."
+      },
+      {
+        "id": 11,
+        "title": "Unit Testing Suite",
+        "description": "Create comprehensive unit tests for all API endpoints and business logic.",
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "details": "Implement pytest test suite covering all endpoints, validation rules, edge cases (duplicate phone numbers, insufficient balance, non-existent accounts, negative amounts), and database operations.",
+        "testStrategy": "Achieve high test coverage, run tests automatically, and ensure all edge cases are properly tested."
+      },
+      {
+        "id": 12,
+        "title": "Environment Configuration Management",
+        "description": "Set up proper environment variable management and configuration.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          1
+        ],
+        "details": "Configure DATABASE_URL and SECRET_KEY environment variables, create .env file template, and implement configuration validation on startup.",
+        "testStrategy": "Verify environment variables are properly loaded, validation works, and application fails gracefully with missing configuration."
+      },
+      {
+        "id": 13,
+        "title": "Logging and Monitoring Setup",
+        "description": "Implement comprehensive logging and basic monitoring for the API.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          3,
+          4,
+          5
+        ],
+        "details": "Set up structured logging for all API requests, database operations, and errors. Implement basic health check endpoint and request/response logging.",
+        "testStrategy": "Verify logs are generated correctly, contain relevant information, and health check endpoint works properly."
+      },
+      {
+        "id": 14,
+        "title": "Performance Optimization and Database Indexing",
+        "description": "Optimize database performance and implement proper indexing.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          2,
+          11
+        ],
+        "details": "Add database indexes for frequently queried fields (account_number, phone), optimize queries, and implement connection pooling for better performance.",
+        "testStrategy": "Run performance tests, verify query execution times, and ensure indexes are being used effectively."
+      },
+      {
+        "id": 15,
+        "title": "API Response Standardization",
+        "description": "Standardize API response formats and implement consistent error handling.",
+        "status": "pending",
+        "priority": "low",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "details": "Create consistent response models for success and error cases, implement proper HTTP status codes, and ensure all endpoints follow the same response format.",
+        "testStrategy": "Verify all endpoints return consistent response formats and proper HTTP status codes for different scenarios."
+      }
+    ],
+    "metadata": {
+      "projectName": "Bric Pay - Mock Fintech API",
+      "version": "1.0.0",
+      "lastUpdated": "2025-01-27T12:00:00Z",
+      "totalTasks": 15,
+      "completedTasks": 0,
+      "pendingTasks": 15,
+      "created": "2025-07-29T21:37:13.074Z",
+      "description": "Tasks for master context",
+      "updated": "2025-07-30T10:22:12.119Z"
+    }
+  }
+}

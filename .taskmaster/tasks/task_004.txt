@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Deposit Funds API Endpoint
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Implement the POST /deposit endpoint for adding funds to user accounts.
+# Details:
+Create endpoint that accepts account_number and amount, validates account exists and amount is positive, updates account balance, creates transaction record, and returns updated balance with success message.
+
+# Test Strategy:
+Test with valid account numbers and amounts, invalid accounts, negative amounts, and verify balance updates correctly.

@@ -1,0 +1,11 @@
+# Task ID: 12
+# Title: Environment Configuration Management
+# Status: pending
+# Dependencies: 1
+# Priority: low
+# Description: Set up proper environment variable management and configuration.
+# Details:
+Configure DATABASE_URL and SECRET_KEY environment variables, create .env file template, and implement configuration validation on startup.
+
+# Test Strategy:
+Verify environment variables are properly loaded, validation works, and application fails gracefully with missing configuration.

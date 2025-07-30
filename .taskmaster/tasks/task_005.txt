@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Transfer Funds API Endpoint
+# Status: pending
+# Dependencies: 3, 4
+# Priority: high
+# Description: Implement the POST /transfer endpoint for peer-to-peer fund transfers between accounts.
+# Details:
+Create endpoint that accepts from_account, to_account, and amount, validates both accounts exist, checks sufficient balance, performs atomic transfer (debit sender, credit receiver), creates transaction records, and returns transfer confirmation.
+
+# Test Strategy:
+Test successful transfers, insufficient balance scenarios, non-existent accounts, and verify atomicity of transactions.

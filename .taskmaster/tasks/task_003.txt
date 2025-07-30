@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Account Creation API Endpoint
+# Status: pending
+# Dependencies: 2
+# Priority: high
+# Description: Implement the POST /create-account endpoint for user registration and account creation.
+# Details:
+Create endpoint that accepts user data (name, surname, phone, password, date_of_birth, place_of_birth), validates input, hashes password with bcrypt, generates unique 10-12 digit account number, stores user in database, and returns account number and initial balance (0).
+
+# Test Strategy:
+Test with valid and invalid inputs, verify password hashing, account number generation, duplicate phone number handling, and proper response format.

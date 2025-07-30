@@ -1,0 +1,11 @@
+# Task ID: 11
+# Title: Unit Testing Suite
+# Status: pending
+# Dependencies: 6, 7, 8, 9
+# Priority: medium
+# Description: Create comprehensive unit tests for all API endpoints and business logic.
+# Details:
+Implement pytest test suite covering all endpoints, validation rules, edge cases (duplicate phone numbers, insufficient balance, non-existent accounts, negative amounts), and database operations.
+
+# Test Strategy:
+Achieve high test coverage, run tests automatically, and ensure all edge cases are properly tested.

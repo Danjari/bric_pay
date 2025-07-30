@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Input Validation and Error Handling
+# Status: pending
+# Dependencies: 3, 4, 5
+# Priority: medium
+# Description: Implement comprehensive input validation and error handling for all API endpoints.
+# Details:
+Add validation for phone number format (+country code), password strength (minimum 8 characters), positive amounts, account existence, and proper error responses with appropriate HTTP status codes.
+
+# Test Strategy:
+Test all validation rules with edge cases and verify proper error messages and status codes are returned.

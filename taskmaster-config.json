@@ -1,0 +1,24 @@
+{
+  "taskmaster": {
+    "enabled": true,
+    "autoStart": true,
+    "logLevel": "info",
+    "apiKeys": {
+      "anthropic": "YOUR_ANTHROPIC_API_KEY_HERE",
+      "perplexity": "YOUR_PERPLEXITY_API_KEY_HERE",
+      "openai": "YOUR_OPENAI_KEY_HERE",
+      "google": "AIzaSyDa8vk2RgZ7RDP0D9bNNYpo0LEH6TpjHB8",
+      "mistral": "YOUR_MISTRAL_KEY_HERE",
+      "openrouter": "YOUR_OPENROUTER_KEY_HERE",
+      "xai": "YOUR_XAI_KEY_HERE",
+      "azure": "YOUR_AZURE_KEY_HERE",
+      "ollama": "YOUR_OLLAMA_API_KEY_HERE"
+    },
+    "settings": {
+      "maxConcurrentTasks": 5,
+      "taskTimeout": 300000,
+      "retryAttempts": 3,
+      "defaultModel": "anthropic"
+    }
+  }
+} 

@@ -1,0 +1,183 @@
+Absolutely. Here's a **detailed Product Requirements Document (PRD)** for your **Bric Pay mock fintech mobile app backend**, focused on account creation, deposits, and transfers.
+
+---
+
+# 📄 Product Requirements Document (PRD)
+
+**Project Name**: Bric Pay – Mock Fintech API
+**Type**: Backend API (Python, FastAPI)
+**Owner**: Moudjahid
+**Date**: July 29, 2025
+**Status**: Draft v1.0
+
+---
+
+## 🔍 1. Overview
+
+Bric Pay aims to provide a seamless banking-like experience through a fintech mobile application. While it mimics traditional banking operations (account creation, deposits, transfers), the app intentionally abstracts banking language to create a frictionless and user-friendly interface. The current scope is limited to a **mock backend** for prototyping and testing the mobile frontend.
+
+---
+
+## 🎯 2. Goals
+
+* Simulate user account creation via API using simple identity inputs
+* Automatically generate a pseudo bank account number
+* Enable mock deposits and instant transfers between accounts
+* Prioritize speed, simplicity, and clarity in API responses
+* Store data in a lightweight local database (SQLite) for rapid development
+
+---
+
+## 📦 3. Core Features
+
+### 3.1. Account Creation
+
+* **Endpoint**: `POST /create-account`
+
+* **Input**:
+
+  ```json
+  {
+    "name": "John",
+    "surname": "Doe",
+    "phone": "+22798765432",
+    "password": "strongpass123",
+    "date_of_birth": "2001-05-20",
+    "place_of_birth": "Niamey"
+  }
+  ```
+
+* **Behavior**:
+
+  * Hash the password securely using `bcrypt`
+  * Generate a random 10–12-digit numeric string as a **bank account number**
+  * Store the user data in the database
+  * Return the newly created account number and balance (default: 0)
+
+* **Response**:
+
+  ```json
+  {
+    "account_number": "227812345678",
+    "message": "Account created successfully.",
+    "balance": 0.0
+  }
+  ```
+
+---
+
+### 3.2. Deposit Funds
+
+* **Endpoint**: `POST /deposit`
+
+* **Input**:
+
+  ```json
+  {
+    "account_number": "227812345678",
+    "amount": 50000
+  }
+  ```
+
+* **Behavior**:
+
+  * Locate the account in the DB
+  * Increase balance by the specified amount
+  * Return updated balance
+
+* **Response**:
+
+  ```json
+  {
+    "account_number": "227812345678",
+    "new_balance": 50000.0,
+    "message": "Deposit successful."
+  }
+  ```
+
+---
+
+### 3.3. Transfer Funds
+
+* **Endpoint**: `POST /transfer`
+
+* **Input**:
+
+  ```json
+  {
+    "from_account": "227812345678",
+    "to_account": "227856789012",
+    "amount": 10000
+  }
+  ```
+
+* **Behavior**:
+
+  * Verify both accounts exist
+  * Check if the sender has sufficient funds
+  * Debit sender’s account and credit receiver’s account
+  * Return transaction status
+
+* **Response**:
+
+  ```json
+  {
+    "from_account": "227812345678",
+    "to_account": "227856789012",
+    "amount": 10000.0,
+    "message": "Transfer successful."
+  }
+  ```
+
+---
+
+## 🛠️ 4. Technical Requirements
+
+### Backend
+
+* **Language**: Python 3.9+
+* **Framework**: FastAPI
+* **Database**: SQLite (development); switchable to PostgreSQL
+* **ORM**: SQLAlchemy (async with `databases` package)
+* **Password Hashing**: bcrypt
+* **UUID/Account Generator**: `uuid` or custom numeric generator
+
+### Environment Variables
+
+* `.env` file to store:
+
+  * `DATABASE_URL`
+  * `SECRET_KEY`
+
+---
+
+## ✅ 5. Validation Rules
+
+* Phone numbers must start with `+` and include country code (e.g., `+227`)
+* Password must be at least 8 characters
+* Deposit and transfer amounts must be positive floats
+* Transfer only allowed if sender balance ≥ amount
+
+---
+
+## 🧪 6. Testing
+
+* Unit tests for all endpoints using `pytest`
+* Test edge cases:
+
+  * Duplicate phone number
+  * Transfer to non-existent account
+  * Insufficient balance
+  * Deposit with negative amount
+
+---
+
+## 🧑‍💻 7. API Structure
+
+```
+/create-account    -> Create user + return account number
+/deposit           -> Add funds to account
+/transfer          -> Simulate P2P transfer
+```
+
+---
