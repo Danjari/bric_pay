@@ -2,6 +2,8 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import logging
 from config import settings
+from src.database import init_db
+from src.routes.account_routes import account_bp
 
 # Configure logging
 logging.basicConfig(
@@ -16,6 +18,12 @@ app.config['SECRET_KEY'] = settings.secret_key
 
 # Add CORS support
 CORS(app, origins=settings.allowed_hosts)
+
+# Initialize database
+init_db()
+
+# Register blueprints
+app.register_blueprint(account_bp)
 
 @app.route('/')
 def root():
