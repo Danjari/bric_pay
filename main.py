@@ -4,6 +4,7 @@ import logging
 from config import settings
 from src.database import init_db
 from src.routes.account_routes import account_bp
+from src.routes.deposit_routes import deposit_bp
 
 # Configure logging
 logging.basicConfig(
@@ -24,6 +25,7 @@ init_db()
 
 # Register blueprints
 app.register_blueprint(account_bp)
+app.register_blueprint(deposit_bp)
 
 @app.route('/')
 def root():

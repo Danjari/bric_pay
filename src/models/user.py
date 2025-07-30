@@ -50,4 +50,10 @@ class User(Base):
             'balance': float(self.balance) if self.balance else 0.00,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        } 
+        }
+    
+    def update_balance(self, amount: float):
+        """Update balance with proper type conversion"""
+        from decimal import Decimal
+        current_balance = float(self.balance) if self.balance else 0.0
+        self.balance = Decimal(str(current_balance + amount)) 

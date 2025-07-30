@@ -66,6 +66,27 @@ class CreateAccountResponse(BaseModel):
     account_number: str = Field(..., description="Generated account number")
     balance: float = Field(..., description="Initial account balance")
     message: str = Field(..., description="Success message")
+
+class DepositRequest(BaseModel):
+    """Schema for deposit request"""
+    account_number: str = Field(..., description="Account number to deposit to")
+    amount: float = Field(..., gt=0, description="Amount to deposit (must be positive)")
+    
+    @validator('amount')
+    def validate_amount(cls, v):
+        """Validate deposit amount"""
+        if v <= 0:
+            raise ValueError('Deposit amount must be positive')
+        if v > 1000000:  # $1M limit
+            raise ValueError('Deposit amount cannot exceed $1,000,000')
+        return round(v, 2)  # Round to 2 decimal places
+
+class DepositResponse(BaseModel):
+    """Schema for deposit response"""
+    account_number: str = Field(..., description="Account number")
+    new_balance: float = Field(..., description="Updated account balance")
+    deposited_amount: float = Field(..., description="Amount that was deposited")
+    message: str = Field(..., description="Success message")
     
 class ErrorResponse(BaseModel):
     """Schema for error responses"""
