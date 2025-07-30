@@ -97,7 +97,7 @@
         "id": 4,
         "title": "Deposit Funds API Endpoint",
         "description": "Implement the POST /deposit endpoint for adding funds to user accounts.",
-        "status": "pending",
+        "status": "in-progress",
         "priority": "high",
         "dependencies": [
           2
@@ -262,7 +262,7 @@
       "pendingTasks": 15,
       "created": "2025-07-29T21:37:13.074Z",
       "description": "Tasks for master context",
-      "updated": "2025-07-30T10:38:31.591Z"
+      "updated": "2025-07-30T10:45:08.366Z"
     }
   }
 }
